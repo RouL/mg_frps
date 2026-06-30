@@ -1,0 +1,11 @@
+#!/bin/bash -e
+
+readonly SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+readonly BASE_DIR=$(dirname -- "$SCRIPT_DIR")
+readonly COMMAND=$(basename -- "${BASH_SOURCE[0]}")
+
+cd $BASE_DIR
+
+docker compose pull
+docker compose up -d --force-recreate
+echo "y" | docker image prune

@@ -1,0 +1,12 @@
+bindPort = {{ .Envs.FRPS_BIND_PORT }}
+
+allowPorts = [
+  { single = 80 }
+]
+
+# AUTH
+auth.method = "token"
+auth.token = "{{ .Envs.FRPS_AUTH_TOKEN }}"
+
+# LOGGING
+log.disablePrintColor = true

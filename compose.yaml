@@ -1,0 +1,34 @@
+services:
+  frps:
+    image: ghcr.io/fatedier/frps:v0.69.1
+    restart: unless-stopped
+    command: "-c /frps.toml"
+    volumes:
+      - ./includes/frps.toml:/frps.toml
+    ports:
+      - "${FRPS_BIND_PORT}:${FRPS_BIND_PORT}"
+    environment:
+      FRPS_BIND_PORT: ${FRPS_BIND_PORT}
+      FRPS_AUTH_TOKEN: ${FRPS_AUTH_TOKEN}
+    labels:
+      - traefik.enable=true
+      - traefik.http.middlewares.redirect-https.redirectScheme.scheme=https
+      - traefik.http.middlewares.redirect-https.redirectScheme.permanent=true
+      - traefik.http.routers.${TRAEFIK_SERVICE}-https.rule=Host(`${TRAEFIK_DOMAIN}`)
+      - traefik.http.routers.${TRAEFIK_SERVICE}-https.entrypoints=websecure
+      - traefik.http.routers.${TRAEFIK_SERVICE}-https.tls=true
+      - traefik.http.routers.${TRAEFIK_SERVICE}-https.tls.certresolver=letsencrypt
+      - traefik.http.routers.${TRAEFIK_SERVICE}-https.service=${TRAEFIK_SERVICE}
+      - traefik.http.routers.${TRAEFIK_SERVICE}-http.rule=Host(`${TRAEFIK_DOMAIN}`)
+      - traefik.http.routers.${TRAEFIK_SERVICE}-http.entrypoints=web
+      - traefik.http.routers.${TRAEFIK_SERVICE}-http.middlewares=redirect-https
+      - traefik.http.routers.${TRAEFIK_SERVICE}-http.service=${TRAEFIK_SERVICE}
+      - traefik.http.services.${TRAEFIK_SERVICE}.loadbalancer.server.port=80
+    networks:
+      - default
+      - traefik
+
+networks:
+  default:
+  traefik:
+    external: true
