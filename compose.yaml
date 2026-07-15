@@ -1,6 +1,6 @@
 services:
   frps:
-    image: ghcr.io/fatedier/frps:v0.69.1
+    image: ghcr.io/fatedier/frps:v0.70.0
     restart: unless-stopped
     command: "-c /frps.toml"
     volumes:
@@ -11,6 +11,10 @@ services:
       FRPS_BIND_PORT: ${FRPS_BIND_PORT}
       FRPS_AUTH_TOKEN: ${FRPS_AUTH_TOKEN}
     labels:
+      - diun.watch_repo=true
+      - diun.sort_tags=semver
+      - diun.include_tags=^v\d+\.\d+\.\d+$$
+      - diun.max_tags=5
       - traefik.enable=true
       - traefik.http.middlewares.redirect-https.redirectScheme.scheme=https
       - traefik.http.middlewares.redirect-https.redirectScheme.permanent=true
